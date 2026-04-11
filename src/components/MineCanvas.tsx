@@ -34,7 +34,8 @@ export default function MineCanvas({ setLoadingProgress, scrollYProgress }: Mine
     framesToLoad.forEach((frameIdx) => {
       const img = new Image();
       const paddedIdx = String(frameIdx).padStart(4, '0');
-      img.src = `/frames/${paddedIdx}.jpg`;
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+      img.src = `${basePath}/frames/${paddedIdx}.jpg`;
       img.onload = () => {
         loadedCount++;
         setLoadingProgress(Math.floor((loadedCount / framesToLoad.length) * 100));
