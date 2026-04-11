@@ -1,12 +1,17 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production';
+
 const nextConfig = {
   output: 'export',
-  basePath: '/demo',
+  // Only use basePath in production for GitHub Pages deployment
+  basePath: isProd ? '/demo' : '',
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },
+  // Ensure the basePath is available in client-side code
   env: {
-    NEXT_PUBLIC_BASE_PATH: '/demo',
+    NEXT_PUBLIC_BASE_PATH: isProd ? '/demo' : '',
   },
 };
 
