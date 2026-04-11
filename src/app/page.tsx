@@ -1,101 +1,58 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useRef } from 'react';
+import { useScroll, useTransform, motion } from 'framer-motion';
+import HeroSection from '@/components/HeroSection';
+import MineCanvas from '@/components/MineCanvas';
+import ScrollText from '@/components/ScrollText';
+import KnowledgeHubPreview from '@/components/KnowledgeHubPreview';
+import CTAFooter from '@/components/CTAFooter';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Track scroll specifically for the interactive animation section
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Background color interpolation: #1a1a0e (Surface) to #0e0804 (Underground)
+  const backgroundColor = useTransform(
+    scrollYProgress,
+    [0, 1],
+    ["#1a1a0e", "#0e0804"]
+  );
+
+  return (
+    <motion.main 
+      style={{ backgroundColor }}
+      className="min-h-screen transition-colors duration-200"
+    >
+      {/* 
+        This wrapper creates the scrollable height. 
+        It needs to be tall enough to allow smooth scrubbing of all 382 frames.
+        400vh is a good starting point. 
+      */}
+      <div ref={containerRef} className="relative h-[400vh]">
+        {/* The pinned canvas and text overlays */}
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          <MineCanvas 
+            setLoadingProgress={setLoadingProgress} 
+            scrollYProgress={scrollYProgress} 
+          />
+          
+          <div className="absolute inset-0 bg-black/10 pointer-events-none" /> {/* Subtle darkening overlay */}
+          
+          <ScrollText scrollYProgress={scrollYProgress} />
+          <HeroSection loadingProgress={loadingProgress} />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+
+      {/* These sections naturally flow below the pinned scrolling animation */}
+      <KnowledgeHubPreview />
+      <CTAFooter />
+    </motion.main>
   );
 }

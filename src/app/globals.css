@@ -2,26 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply text-white overflow-x-hidden;
   }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .font-serif {
+    font-family: var(--font-cormorant), serif;
   }
+  .font-sans {
+    font-family: var(--font-inter), sans-serif;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  /* On reduced motion, you could add rules here to hide scroll animations 
+     and show static images, but for now we leave the CSS simple and rely 
+     on the fact that React / Tailwind handles normal rendering. */
 }
